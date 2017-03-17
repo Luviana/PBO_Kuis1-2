@@ -563,23 +563,21 @@ public class form_main extends javax.swing.JFrame {
             ResultSet rs = st.executeQuery("SELECT * FROM tb_peminjam WHERE nama like '%"+ search +"%' OR no_struk like '%"+ search + "%'");
             DefaultTableModel dtm = (DefaultTableModel) tblData.getModel();
 
-            dtm.setRowCount(0);
-            String [] data = new String[9];
-            int i = 1;
-
-            while(rs.next())
-            {
-                data[0] = rs.getString("nama");
-                data[1] = rs.getString("no_KTP");
-                data[2] = rs.getString("no_telp");
-                data[3] = rs.getString("alamat");
-                data[4] = rs.getString("no_struk");
+                            data[4] = rs.getString("no_struk");
                 data[5] = rs.getString("no_pol");
                 data[6] = rs.getString("tanggal_pinjam");
                 data[7] = rs.getString("tanggal_kembali");
                 data[8] = rs.getString("harga");
                 dtm.addRow(data);
                 i++;
+            
+            dtm.setRowCount(0);
+            String [] data = new String[9];
+            int i = 1;
+
+            while(rs.next())
+            {
+
             }
             rs.close();
             txtSearch.setText("");
