@@ -9,7 +9,10 @@ import static com.sun.org.apache.xalan.internal.lib.ExsltDatetime.date;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import static java.lang.Math.toIntExact;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
@@ -548,8 +551,42 @@ public class form_main extends javax.swing.JFrame {
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
-        
-        String SQL = "SELECT * FROM tb_peminjam WHERE nama LIKE '%" + txtSearch.getText() + "%'";
+   
+        try{
+            String konString = "jdbc:mysql://localhost:3306/db_pinjammotor"; 
+            Connection conn;
+            conn = (com.mysql.jdbc.Connection) 
+            DriverManager.getConnection(konString,"root",""); ;
+            
+            Statement st = conn.createStatement();
+            String search = txtSearch.getText();
+            ResultSet rs = st.executeQuery("SELECT * FROM tb_peminjam WHERE nama like '%"+ search +"%' OR no_struk like '%"+ search + "%'");
+            DefaultTableModel dtm = (DefaultTableModel) tblData.getModel();
+
+            dtm.setRowCount(0);
+            String [] data = new String[9];
+            int i = 1;
+
+            while(rs.next())
+            {
+                data[0] = rs.getString("nama");
+                data[1] = rs.getString("no_KTP");
+                data[2] = rs.getString("no_telp");
+                data[3] = rs.getString("alamat");
+                data[4] = rs.getString("no_struk");
+                data[5] = rs.getString("no_pol");
+                data[6] = rs.getString("tanggal_pinjam");
+                data[7] = rs.getString("tanggal_kembali");
+                data[8] = rs.getString("harga");
+                dtm.addRow(data);
+                i++;
+            }
+            rs.close();
+            txtSearch.setText("");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null,"Data yang Anda cari Tidak dapat Ditemukan");
+            System.err.println("error (search) : " +ex);
+        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnHitungActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHitungActionPerformed
@@ -575,36 +612,7 @@ public class form_main extends javax.swing.JFrame {
         
         dispose();
     }//GEN-LAST:event_btnCloseActionPerformed
-        
-    private void search() throws SQLException {
-        String SQL;
-        String header[] = {"nama", "no_ktp", "no_telp", "alamat", "no_struk", "no_pol", "tanggal_pinjam", "tanggal_kembali", "harga"};
-        DefaultTableModel defaultTableModel = new DefaultTableModel(null, header);
-        tblData.setModel (defaultTableModel);
-        for(int i = 0; i < tblData.getRowCount(); i++){
-            defaultTableModel.removeRow(1);
-        }
-        
-        try{
-            ResultSet rs = KoneksiDB.executeQuery(SQL);
-            while(rs.next()){
-                String nama = rs.getString(1);
-                String no_ktp = rs.getString(2);
-                String no_telp = rs.getString(3);
-                String alamat = rs.getString(4);
-                String no_struk = rs.getString(5);
-                String no_pol = rs.getString(6);
-                String tanggal_pinjam = rs.getString(7);
-                String tanggal_kembali = rs.getString(8);
-                String harga = rs.getString(9);
-                String data[] = {nama, no_ktp, no_telp, alamat, no_struk, no_pol, tanggal_pinjam, tanggal_kembali, harga};
-                defaultTableModel.addRow(data);
-            }   
-        } catch (Exception e){
-                    JOptionPane.showMessageDialog(null, e.getMessage());
-        }
-    }
-    
+            
     public void selectData() throws SQLException {
         String kolom[] = {"nama", "no_ktp", "no_telp", "alamat", "no_struk", "no_pol", "tanggal_pinjam", "tanggal_kembali", "harga"};
         DefaultTableModel dtm = new DefaultTableModel(null, kolom);
