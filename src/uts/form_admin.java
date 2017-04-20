@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -19,6 +20,7 @@ import javax.swing.JOptionPane;
  */
 public class form_admin extends javax.swing.JFrame {
 
+    
     /**
      * Creates new form form_admin
      */
@@ -166,14 +168,16 @@ public class form_admin extends javax.swing.JFrame {
     private void btnSignInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSignInActionPerformed
         Connection connection;
         PreparedStatement ps;
+        
         try {
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_pinjammotor?zeroDateTimeBehavior=convertToNull", "root", "");
            ps = connection.prepareStatement("SELECT `username`, `password` FROM `tb_admin` WHERE `username` = ? AND `password` =?");
            ps.setString(1, txtUsername.getText());
            ps.setString(2, txtPassword.getText());
            ResultSet result = ps.executeQuery();
+           String admin = txtUsername.getText();
            if(result.next()){
-               new form_main().show();
+               new form_main(admin).show();
                this.dispose();
            } else {
                JOptionPane.showMessageDialog(rootPane, "Salah !");
